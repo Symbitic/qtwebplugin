@@ -110,8 +110,14 @@ void QWebScreen::togglePower(qsizetype openConnections)
 
 void QWebScreen::handleResize(const quint16 width, const quint16 height, const qreal physicalWidth, const qreal physicalHeight)
 {
+#if 1
+    setPhysicalSize(QSizeF(physicalWidth, physicalHeight).toSize());
+    setGeometry(QRect(0, 0, width, height));
+#else
     setGeometry(QRect(0, 0, width, height));
     setPhysicalSize(QSizeF(physicalWidth, physicalHeight).toSize());
+    toSize());
+#endif
 }
 
 QWebServer::QWebServer(quint16 port)
