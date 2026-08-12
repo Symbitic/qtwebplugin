@@ -1,0 +1,36 @@
+name: Continuous Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  linux:
+    name: Linux x86_64
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        qt: ["6.8", "6.10"]
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - run: sudo apt install -y libxkbcommon-x11-dev cmake ninja-build build-essential
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '${{ matrix.qt }}.*'
+
+      - name: Configure
+        run: cmake --config Release -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release -j 4
+
+      - name: Print output files
+        run: |
+          echo "Output files:"
+          find build -type f -name "*.so"
