@@ -25,10 +25,10 @@ jobs:
           version: '${{ matrix.qt }}.*'
 
       - name: Configure
-        run: cmake --config Release -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build --config Release -j 4
+        run: cmake --build build -j 4
 
       - name: Print output files
         run: |
