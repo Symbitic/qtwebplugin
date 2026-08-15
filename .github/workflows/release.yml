@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   linux:
     name: Linux x86_64
@@ -31,7 +34,10 @@ jobs:
       - name: Build
         run: cmake --build build -j 4
 
+      - name: Rename
+        run: mv build/plugins/platforms/libqweb.so "build/plugins/platforms/libqweb-${{ matrix.qt }}.so"
+
       - name: Print output files
         run: |
           echo "Output files:"
-          find build -type f -name "*.so"
+          find build/plugins -type f
