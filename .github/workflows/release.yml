@@ -10,8 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  linux:
-    name: Linux x86_64
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -35,9 +34,29 @@ jobs:
         run: cmake --build build -j 4
 
       - name: Rename
-        run: mv build/plugins/platforms/libqweb.so "build/plugins/platforms/libqweb-${{ matrix.qt }}.so"
+        run: mv build/plugins/platforms/libqweb.so "libqweb-${{ matrix.qt }}.so"
 
-      - name: Print output files
-        run: |
-          echo "Output files:"
-          find build/plugins -type f
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: libqweb-${{ matrix.qt }}
+          path: libqweb-${{ matrix.qt }}.so
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v8
+        with:
+          path: release
+
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: Release ${{ github.run_number }}
+          tag_name: release-${{ github.run_number }}
+          files: release/**/libqweb-*.so
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
